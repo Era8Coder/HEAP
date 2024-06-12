@@ -58,6 +58,26 @@ bool search_key(TrieNode* root, string &key){
     return (curr -> isWordEnd == true);         // If end of word is true then return true else return false
 }
 
+/*
+    boolean startsWith(String prefix) Returns true if there is a previously 
+    inserted string word that has the prefix prefix, and false otherwise.
+*/
+    bool startsWith(string prefix) {
+        int length = prefix.size();
+        int k = 0;
+        trienode* curr = root;
+        for(int i=0; i<length; i++){
+            k = prefix[i] - 'a';
+            curr = curr -> children[k];
+        
+            if(curr ==  nullptr){
+                return false;
+            }
+        }
+
+        return true;
+    }
+
 int main(){
     // Make a root Node for Trie
     TrieNode* root = new TrieNode();
