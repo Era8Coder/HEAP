@@ -1,67 +1,60 @@
 #include<bits/stdc++.h>
 using namespace std;
 
-class TrieNode{
-    public:
-    // Pointer Array for child of each Nodes
-    TrieNode* childNode[26];                // 26 block of memory <<--          // Here we are creating pointers in each of the index 
-    // Basically the array of pointers to next Triennode
-    bool isWordEnd;
+struct trienode{
+    bool isendofword;       // it will tell us about node that whether word is ending there or nor
+    trienode* children[26];  // 26 characters array
 
-    TrieNode(){             // Constructor of Class
-        isWordEnd = false;
+    trienode(){
+        isendofword = false;
         for(int i=0; i<26; i++){
-            childNode[i] = NULL;
+            children[i] = nullptr;
         }
     }
 };
 
-// Insertion Time Complexity
-/*
-    Time Complexity = O(Number of Words * Max Length of Words)
-    SpaceComplexity = O(Number of Words * Max Length of Words)
-*/
-void insert_key(TrieNode* root, string &key){
-    // Initialise the Root Pointer with Root Node
-    TrieNode* curr_node = root;             // Initialising the root as current Node
+class Trie {
+trienode* root;     // that is root of my trie(prefic tree)
 
-    // Iterating over the String
-    for(int i=0; i<key.size(); i++){
-        // Check that we can insert or Not
-        if(curr_node->childNode[key[i]-'a'] == NULL){        // Checking that already a node exist for character or not
-            TrieNode* new_node = new TrieNode();
-            curr_node->childNode[key[i]-'a'] = new_node;     // Making it the new node <<--||-->>
-        }
-        curr_node = curr_node->childNode[key[i] - 'a'];      // Now move the curr pointer to the newly Made Node
+public:
+    Trie() {
+        root = new trienode();      // i am creating a new node here of trie which we want to make and it will act as my root
     }
+    
+    void insert(string word) {
+        int length = word.size();
+        int k = 0;
+        trienode* curr = root;
 
-    curr_node->isWordEnd = true;
-}
+        for(int i=0; i<length; i++){
+            k = word[i] - 'a';
+            if(curr->children[k] == nullptr){       // that is no character is there
+                curr->children[k] = new trienode();
+            }
 
-// Search Time Complexity 
-/*
-    Time Complexity = O(n)
-    SpaceComplexity = O(1);
-*/
-bool search_key(TrieNode* root, string &key){
-    // Initialise the current pointer as root
-    TrieNode* curr = root;
-
-    // Iterate over the string
-    for(int i=0; i<key.size(); i++){
-        if(curr->childNode[key[i] - 'a'] == NULL){
-            return false;           // Given word doesn't exist in Trie since we had traversed the whole key
+            curr = curr -> children[k];
         }
-        curr = curr->childNode[key[i] - 'a'];
+        curr->isendofword = true;
     }
+    
+    bool search(string word) {
+        int length = word.size();
+        int k = 0;
+        trienode* curr = root;
 
-    return (curr -> isWordEnd == true);         // If end of word is true then return true else return false
-}
+        for(int i=0; i<length; i++){
+            k = word[i] - 'a';
+            curr = curr -> children[k];
 
-/*
-    boolean startsWith(String prefix) Returns true if there is a previously 
-    inserted string word that has the prefix prefix, and false otherwise.
-*/
+            if(curr == NULL){       // agar current pehle hee NULL ho jaye toh 
+                return false;
+            }
+        }
+
+        // agar size tak traverse kar liya phir check karo ko isendofword kya hai ??
+        return curr -> isendofword;
+    }
+    
     bool startsWith(string prefix) {
         int length = prefix.size();
         int k = 0;
@@ -77,28 +70,12 @@ bool search_key(TrieNode* root, string &key){
 
         return true;
     }
+};
 
-int main(){
-    // Make a root Node for Trie
-    TrieNode* root = new TrieNode();
-    vector<string> input = {"and", "ant", "do", "geek", "dad", "ball"};         // We have to insert these Strings
-
-    // Number of INSERT OPERATIONS 
-    int n = input.size();
-    for(int i=0; i<n; i++){
-        insert_key(root, input[i]);         // Inserting of String
-    }
-    
-    vector<string> search_query = {"do", "geek", "bat"};
-    int k = search_query.size();
-
-    for(int i=0; i<k; i++){
-        cout << search_query[i] << endl;
-        if(search_key(root, search_query[i])){
-            cout << "Yes it's Present." << endl;
-        }else{
-            cout << "No, it's Not Present." << endl;
-        }
-    }
-    return 0;
-}
+/**
+ * Your Trie object will be instantiated and called as such:
+ * Trie* obj = new Trie();
+ * obj->insert(word);
+ * bool param_2 = obj->search(word);
+ * bool param_3 = obj->startsWith(prefix);
+ */
